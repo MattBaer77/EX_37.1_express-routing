@@ -1,6 +1,7 @@
 const express = require('express');
 const ExpressError = require('./expressError')
 const {mean} = require('./mean')
+const {convert} = require('./convert')
 
 const app = express();
 
@@ -12,12 +13,16 @@ app.use(express.json())
 app.get('/mean', (req, res) => {
 
     if (!req.query.nums) {
-        throw new ExpressError('You must pass a query key of "nums" and a value of a comma-separated list of numbers.', 400)
+        throw new ExpressError('You must pass a query key of nums and a value of a comma-separated list of numbers.', 400)
     }
 
     const stringNums = req.query.nums.split(',');
 
-    const nums = stringNums.map(num => parseInt(num))
+    const nums = convert(stringNums)
+
+    if (nums.includes(NaN)) {
+        throw new ExpressError('Values in nums string must be numbers.', 400)
+    }
 
     const meanNums = mean(nums)
 
