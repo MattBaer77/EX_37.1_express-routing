@@ -2,6 +2,7 @@ const express = require('express');
 const ExpressError = require('./expressError')
 const {mean} = require('./mean')
 const {median} = require('./median')
+const {mode} = require('./mode')
 const {convert} = require('./convert')
 
 const app = express();
@@ -10,8 +11,7 @@ app.use(express.json())
 
 // all get routes
 
-
-app.get('/mean', (req, res) => {
+app.get('/mean', (req, res, next) => {
 
     if (!req.query.nums) {
         throw new ExpressError('You must pass a query key of nums and a value of a comma-separated list of numbers.', 400)
@@ -35,7 +35,7 @@ app.get('/mean', (req, res) => {
 
 })
 
-app.get('/median', (req, res) => {
+app.get('/median', (req, res, next) => {
 
     if (!req.query.nums) {
         throw new ExpressError('You must pass a query key of nums and a value of a comma-separated list of numbers.', 400)
@@ -59,8 +59,29 @@ app.get('/median', (req, res) => {
 
 })
 
-// app.get('/median')
-// app.get('/mode')
+app.get('/mode', (req, res, next) => {
+
+    if (!req.query.nums) {
+        throw new ExpressError('You must pass a query key of nums and a value of a comma-separated list of numbers.', 400)
+    }
+
+    const stringNums = req.query.nums.split(',');
+    const nums = convert(stringNums)
+
+    if (nums.includes(NaN)) {
+        throw new ExpressError('Values in nums string must be numbers.', 400)
+    }
+
+    const modeNums = mode(nums)
+
+    const r = {
+        operation: "mode",
+        value: modeNums
+    }
+
+    return res.json(r)
+
+})
 
 app.use((req, res, next) => {
 
