@@ -28,10 +28,10 @@ function mode(nums) {
     }
 
     if (keysOfMax.length === 1) {
-        return keysOfMax[0]
+        return parseInt(keysOfMax[0])
     }
 
-    return keysOfMax
+    return keysOfMax.map((key) => {return parseInt(key)})
 
 }
 
