@@ -1,6 +1,7 @@
 const express = require('express');
 const ExpressError = require('./expressError')
 const {mean} = require('./mean')
+const {median} = require('./median')
 const {convert} = require('./convert')
 
 const app = express();
@@ -17,7 +18,6 @@ app.get('/mean', (req, res) => {
     }
 
     const stringNums = req.query.nums.split(',');
-
     const nums = convert(stringNums)
 
     if (nums.includes(NaN)) {
@@ -29,6 +29,30 @@ app.get('/mean', (req, res) => {
     const r = {
         operation: "mean",
         value: meanNums
+    }
+
+    return res.json(r)
+
+})
+
+app.get('/median', (req, res) => {
+
+    if (!req.query.nums) {
+        throw new ExpressError('You must pass a query key of nums and a value of a comma-separated list of numbers.', 400)
+    }
+
+    const stringNums = req.query.nums.split(',');
+    const nums = convert(stringNums)
+
+    if (nums.includes(NaN)) {
+        throw new ExpressError('Values in nums string must be numbers.', 400)
+    }
+
+    const medianNums = median(nums)
+
+    const r = {
+        operation: "median",
+        value: medianNums
     }
 
     return res.json(r)
